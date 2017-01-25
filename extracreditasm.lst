@@ -1,0 +1,184 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; extracreditasm.s
+    2 00000000         ; Runs on TM4C123
+    3 00000000         ; Andrew Lynch
+    4 00000000         ; January 24, 2017
+    5 00000000         ; Runs asm code for lab1 extra credit for run-time testi
+                       ng
+    6 00000000         ; 16360
+    7 00000000         ; Dylan
+    8 00000000         ; January 24, 2017
+    9 00000000         ; No hardware necessary
+   10 00000000         
+   11 00000000         ;Version 3 assembly floating point
+   12 00000000         ; run with floating-point hardware active
+   13 00000000                 AREA             DATA, ALIGN=2
+   14 00000000 00 00 00 
+              00       Tfloat  SPACE            4
+   15 00000004 00 00 00 
+              00       Nfloat  SPACE            4
+   16 00000008                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   17 00000000                 THUMB
+   18 00000000                 EXPORT           Test3
+   19 00000000         Test3
+   20 00000000 F04F 0000       MOV              R0,#0
+   21 00000004 490B            LDR              R1,=Nfloat  ;pointer to N
+   22 00000006 4A0C            LDR              R2,=Tfloat  ;pointer to T
+   23 00000008 EDDF 0A0C       VLDR.F32         S1,=0.009768
+   24 0000000C EEB2 1A04       VLDR.F32         S2,=10
+   25 00000010 6008    loop3   STR              R0,[R1]     ; N is volatile
+   26 00000012 EE00 0A10       VMOV.F32         S0,R0
+   27 00000016 EEB8 0A40       VCVT.F32.U32     S0,S0       ; S0 has N
+   28 0000001A EE20 0A20       VMUL.F32         S0,S0,S1    ; N*0.09768
+   29 0000001E EE30 0A01       VADD.F32         S0,S0,S2    ; 10+N*0.0968
+   30 00000022 ED82 0A00       VSTR.F32         S0,[R2]     ; T=10+N*0.0968
+   31 00000026 F100 0001       ADD              R0,R0,#1
+   32 0000002A F5B0 5F80       CMP              R0,#4096
+   33 0000002E D1EF            BNE              loop3
+   34 00000030 4770            BX               LR
+   35 00000032         
+   36 00000032         ;version 4, assembly fixed point
+   37 00000032 00 00 00000000 
+              00000000 
+              3C2009F6         AREA             DATA, ALIGN=2
+   38 00000008 00 00 00 
+              00       Tfixed  SPACE            4
+   39 0000000C 00 00 00 
+              00       Nfixed  SPACE            4
+   40 00000010                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   41 00000040                 THUMB
+   42 00000040                 EXPORT           Test4
+   43 00000040 B570    Test4   PUSH             {R4,R5,R6,LR}
+   44 00000042 F04F 0000       MOV              R0,#0
+   45 00000046 490B            LDR              R1,=Nfixed  ;pointer to N
+   46 00000048 4A0B            LDR              R2,=Tfixed  ;pointer to T
+   47 0000004A F04F 037D       MOV              R3,#125
+   48 0000004E F04F 0440       MOV              R4,#64
+   49 00000052 F44F 757A       MOV              R5,#1000
+   50 00000056 6008    loop4   STR              R0,[R1]     ; N is volatile
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   51 00000058 FB00 F603       MUL              R6,R0,R3    ; N*125
+   52 0000005C 4426            ADD              R6,R6,R4    ; N*125+64
+   53 0000005E EA4F 16D6       LSR              R6,R6,#7    ; (N*125+64)/128
+   54 00000062 442E            ADD              R6,R6,R5    ; 1000+(N*125+64)/1
+                                                            28
+   55 00000064 6016            STR              R6,[R2]     ; T = 1000+(N*125+6
+                                                            4)/128
+   56 00000066 F100 0001       ADD              R0,R0,#1
+   57 0000006A F5B0 5F80       CMP              R0,#4096
+   58 0000006E D1F2            BNE              loop4
+   59 00000070 BD70            POP              {R4,R5,R6,PC}
+                       
+              00 00 00000000 
+              00000000 
+Command Line: --debug --xref --cpu=Cortex-M4.fp --apcs=interwork --depend=.\ext
+racreditasm.d -o.\extracreditasm.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\I
+nclude -IC:\Keil\ARM\Inc\TI\TM4C123 --predefine="__EVAL SETA 1" --predefine="__
+MICROLIB SETA 1" --list=.\extracreditasm.lst extracreditasm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 13 in file extracreditasm.s
+   Uses
+      None
+Comment: DATA unused
+Nfixed 0000000C
+
+Symbol: Nfixed
+   Definitions
+      At line 39 in file extracreditasm.s
+   Uses
+      At line 45 in file extracreditasm.s
+Comment: Nfixed used once
+Nfloat 00000004
+
+Symbol: Nfloat
+   Definitions
+      At line 15 in file extracreditasm.s
+   Uses
+      At line 21 in file extracreditasm.s
+Comment: Nfloat used once
+Tfixed 00000008
+
+Symbol: Tfixed
+   Definitions
+      At line 38 in file extracreditasm.s
+   Uses
+      At line 46 in file extracreditasm.s
+Comment: Tfixed used once
+Tfloat 00000000
+
+Symbol: Tfloat
+   Definitions
+      At line 14 in file extracreditasm.s
+   Uses
+      At line 22 in file extracreditasm.s
+Comment: Tfloat used once
+5 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 16 in file extracreditasm.s
+   Uses
+      None
+Comment: .text unused
+Test3 00000000
+
+Symbol: Test3
+   Definitions
+      At line 19 in file extracreditasm.s
+   Uses
+      At line 18 in file extracreditasm.s
+Comment: Test3 used once
+Test4 00000040
+
+Symbol: Test4
+   Definitions
+      At line 43 in file extracreditasm.s
+   Uses
+      At line 42 in file extracreditasm.s
+Comment: Test4 used once
+loop3 00000010
+
+Symbol: loop3
+   Definitions
+      At line 25 in file extracreditasm.s
+   Uses
+      At line 33 in file extracreditasm.s
+Comment: loop3 used once
+loop4 00000056
+
+Symbol: loop4
+   Definitions
+      At line 50 in file extracreditasm.s
+   Uses
+      At line 58 in file extracreditasm.s
+Comment: loop4 used once
+5 symbols
+347 symbols in table

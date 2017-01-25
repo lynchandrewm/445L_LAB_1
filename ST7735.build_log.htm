@@ -1,0 +1,39 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\Keil\ValvanoWareTM4C123\L_Lab1_extraCredit\Lab1_extraCredit.uvproj
+Project File Date:  01/24/2017
+
+<h2>Output:</h2>
+Rebuild target 'ST7735'
+assembling startup.s...
+compiling PLL.c...
+compiling ST7735.c...
+compiling fixed.c...
+fixed.c(180): warning:  #188-D: enumerated type mixed with another type
+    return 6 == ST7735_DrawString(0,0,str_p,ST7735_YELLOW);
+fixed.c(220): warning:  #188-D: enumerated type mixed with another type
+    return (num>=-9999)&&(num<=9999);
+fixed.c(240): warning:  #188-D: enumerated type mixed with another type
+    return (num>=0)&&(num<=99999); 
+fixed.c: 3 warnings, 0 errors
+compiling extracredit.c...
+assembling extracreditasm.s...
+extracreditasm.s(60): warning: A1313W: Missing END directive at end of file
+extracreditasm.s(37): warning: A1581W: Added 2 bytes of padding at address 0x32
+extracreditasm.s(60): warning: A1581W: Added 2 bytes of padding at address 0x72
+compiling Lab1.c...
+extracredit.h(12): warning:  #1-D: last line of file ends without a newline
+  void Test2(void);
+Lab1.c: 1 warning, 0 errors
+compiling SysTickInts.c...
+linking...
+Program Size: Code=4820 RO-data=4392 RW-data=80 ZI-data=1024  
+".\ST7735.axf" - 0 Error(s), 7 Warning(s).
+Load "C:\\Keil\\ValvanoWareTM4C123\\L_Lab1_extraCredit\\ST7735.axf" 
+Connecting: Mode=JTAG, Speed=1000000Hz
+Erase Done.
+Programming Done.
+Verify OK.
