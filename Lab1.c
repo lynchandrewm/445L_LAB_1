@@ -2,9 +2,12 @@
 // Runs on TM4C123
 // Uses ST7735.c LCD.
 // Jonathan Valvano
+// Andrew Lynch
 // January 17, 2017
 // Possible main program to test the lab
-// Feel free to edit this to match your specifications
+// 16360
+// Dylan
+// January 24, 2017
 
 // Backlight (pin 10) connected to +3.3 V
 // MISO (pin 9) unconnected 
@@ -26,8 +29,8 @@
 #include "extracredit.h"
 #include "inc/tm4c123gh6pm.h"
 
-extern void DisableInterrupts(void); // Disable interrupts
-extern void EnableInterrupts(void);  // Enable interrupts
+extern void DisableInterrupts(void); 
+extern void EnableInterrupts(void);  
 extern void Test3(void);
 extern void Test4(void);
 volatile uint32_t Counts = 0;
@@ -103,44 +106,10 @@ const int32_t StarXbuf[50] = {0, -6, -12, -18, -24, -30, -35, -41, -47, -53, 59,
 const int32_t StarYbuf[50] = {190, 172, 154, 136, 118, 100, 81, 63, 45, 27, 9, 27, 45, 63, 81, 100, 118, 136, 154, 172, 121, 121, 121, 121, 121, 121, 121, 121, 121, 121, 9, 20, 31, 43, 54, 65, 76, 87, 99, 110, 121, 110, 99, 87, 76, 65, 54, 43, 31, 20
 };
 
-//extra credit testing
-//must enable floating point in startup.s
-int main(void) { int32_t startTime, time1, time2, time3, time4;
-  PLL_Init(Bus80MHz);         // bus clock at 80 MHz
-  PortF_Init();
-  ST7735_InitR(INITR_REDTAB);
-  SysTick_Init(80);           // initialize SysTick timer (1 micro sec)
-  EnableInterrupts();
-  printf("Timing Analysis");
-  //time these
-  startTime = Counts;
-  Test1();      //floating-point C
-  time1 = (Counts-startTime);
-  printf(".");
-  startTime = Counts;
-  Test2();      //fixed-point C
-  time2 = (Counts-startTime);
-  printf(".");
-  startTime = Counts;
-  Test3();      //floating-point asm
-  time3 = (Counts-startTime);
-  printf(".");
-  startTime = Counts;
-  Test4();      //fixed-point asm
-  time4 = (Counts-startTime);
-  printf(".\n");
-  ST7735_FillScreen(ST7735_BLACK); 
-  ST7735_SetCursor(0,0);
-  printf("Floating C:\n\t%i\nFixed C 2:\n\t%i\nFloating ASM 3:\n\t%i\nFixed ASM 4:\n\t%i",
-    time1,time2,time3,time4);
-}
-
-// Interrupt service routine
-// Executed every 12.5ns*(period)
-void SysTick_Handler(void){
-  Counts = Counts + 1;
-}
-
+/**************Test Lab 1***************
+Written by Valvano. No changes made.
+Ensure floating point in disabled, if just tested extra credit.
+*/
 int main1(void){uint32_t i;
   PLL_Init(80);
   PortF_Init();
@@ -174,6 +143,48 @@ int main1(void){uint32_t i;
   } 
 } 
 
+
+/**************ExtraCredit***************
+Uses SysTick to time 4 tests:
+Test 1 Floating Point arithmatic written in C
+Test 2 Fixed Point arithmatic written in C
+Test 3 Floating Point arithmatic written in assembly
+Test 4 Fixed Point arithmatic written in assembly
+This code requires floating point enabled in startup.s
+*/
+int main(void) { int32_t startTime, time1, time2, time3, time4;
+  PLL_Init(Bus80MHz);         // bus clock at 80 MHz
+  PortF_Init();
+  ST7735_InitR(INITR_REDTAB);
+  SysTick_Init(80);           // initialize SysTick timer (1 micro sec)
+  EnableInterrupts();
+  printf("Timing Analysis");
+  startTime = Counts;
+  Test1();                    //floating-point C
+  time1 = (Counts-startTime);
+  printf(".");
+  startTime = Counts;
+  Test2();                    //fixed-point C
+  time2 = (Counts-startTime);
+  printf(".");
+  startTime = Counts;
+  Test3();                    //floating-point asm
+  time3 = (Counts-startTime);
+  printf(".");
+  startTime = Counts;
+  Test4();                    //fixed-point asm
+  time4 = (Counts-startTime);
+  printf(".\n");
+  ST7735_FillScreen(ST7735_BLACK); 
+  ST7735_SetCursor(0,0);
+                              //maintain spacing for LCD
+  printf("Floating C:  \n             %i\n", time1);
+  printf("Fixed C:     \n             %i\n", time2);
+  printf("Floating ASM:\n             %i\n", time3);
+  printf("Fixed ASM 4: \n             %i\n", time4);
+}
+
+
 // PF4 is input
 // Make PF2 an output, enable digital I/O, ensure alt. functions off
 void PortF_Init(void){ 
@@ -188,6 +199,15 @@ void PortF_Init(void){
   GPIO_PORTF_DEN_R |= 0x14;         // 7) enable digital port
 }
 
+/**************Test Lab 1***************
+Simple counter to be used as a timer.
+Interrupt is triggered every 12.5*(period)ns, 
+therefore with period = 80:
+precision of timing is delta = 0.001ms
+*/
+void SysTick_Handler(void){
+  Counts = Counts + 1;
+}
 
 int main4(void){ 
   PortF_Init();

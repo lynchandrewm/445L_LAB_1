@@ -8,8 +8,8 @@
 ; January 24, 2017
 ; No hardware necessary
 
-;Version 3 assembly floating point
-; run with floating-point hardware active
+;**************Test3***************
+;Runs floating point arithmatic for timing purposes. Does not time itself
         AREA    DATA, ALIGN=2
 Tfloat  SPACE   4
 Nfloat  SPACE   4
@@ -33,7 +33,8 @@ loop3 STR R0,[R1]          ; N is volatile
       BNE loop3
       BX  LR
 
-;version 4, assembly fixed point
+;**************Test3***************
+;Runs fixed point arithmatic for timing purposes. Does not time itself
         AREA    DATA, ALIGN=2
 Tfixed  SPACE   4
 Nfixed  SPACE   4

@@ -8,5 +8,12 @@
 // January 24, 2017
 // No hardware necessary
 
+/**************Test1***************
+Runs floating point arithmatic for timing purposes. Does not time itself
+*/
 void Test1(void);
+
+/**************Test2***************
+Runs fixed point arithmatic for timing purposes. Does not time itself
+*/
 void Test2(void);

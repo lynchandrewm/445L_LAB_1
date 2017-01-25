@@ -14,8 +14,9 @@
 #include "inc/tm4c123gh6pm.h"
 
 
-// version 1: C floating point
-// run with compiler options selected for floating-point hardware
+/**************Test1***************
+Runs floating point arithmatic for timing purposes. Does not time itself
+*/
 volatile float Tfloat;    // temperature in C
 volatile uint32_t N; // 12-bit ADC value
 void Test1(void){
@@ -25,9 +26,10 @@ void Test1(void){
 }
 
 
-// version 2: C fixed-point
+/**************Test2***************
+Runs fixed point arithmatic for timing purposes. Does not time itself
+*/
 volatile uint32_t Tfixed;    // temperature in 0.01 C
-//volatile uint32_t N;    // 12-bit ADC value
 void Test2(void){
   for(N=0; N<4096; N++){
     Tfixed = 1000+ (125*N+64)>>7; 	
