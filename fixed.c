@@ -46,7 +46,7 @@ int32_t static Xmin, Xmax, Xrange, Ymin, Ymax, Yrange;
 void static decToString(int32_t refNum, char* numString);
 void static binToString(int32_t refNum, int32_t res, char* numString);
 void static printTitle(char* str);
-bool static printStringToLCD(char* string);
+void static printStringToLCD(char* string);
 int32_t static magnitude(int32_t n);
 int32_t static decGetPlace(int32_t num, int32_t place);
 char static getAsciiNum(int32_t num);
@@ -175,9 +175,8 @@ void static printTitle(char* str){
 clears the screen, then prints null terminated string. 
 prints in yellow because that appears to be the init default. it's negotiable.
 */
-bool static printStringToLCD(char* str_p){
-  ST7735_FillScreen(0);                      
-  return 6 == ST7735_DrawString(0,0,str_p,ST7735_YELLOW);
+void static printStringToLCD(char* str_p){
+  ST7735_OutString(str_p);
 }
 
 /**************magnitude***************
