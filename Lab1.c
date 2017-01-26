@@ -106,16 +106,26 @@ const int32_t StarXbuf[50] = {0, -6, -12, -18, -24, -30, -35, -41, -47, -53, 59,
 const int32_t StarYbuf[50] = {190, 172, 154, 136, 118, 100, 81, 63, 45, 27, 9, 27, 45, 63, 81, 100, 118, 136, 154, 172, 121, 121, 121, 121, 121, 121, 121, 121, 121, 121, 9, 20, 31, 43, 54, 65, 76, 87, 99, 110, 121, 110, 99, 87, 76, 65, 54, 43, 31, 20
 };
 
-void titleFrame(void);
-void fun1Frame();
-void fun1Data();
+void static TitleFrameExtraCredit(void);
+float static TestFloatInC(void);
+float static TestFixedInC(void);
+float static TestFloatInAsm(void);
+float static TestFixedInAsm(void);
+void static titleFrame(void);
+void static fun1Frame(void);
+void static fun1Data(void);
+void static fun2Frame(void);
+void static fun2Data(void);
+void static fun3Frame(void);
+void static fun3Data1(void);
+void static fun3Data2(void);
 
 /**************Better Test Lab 1***************
-Written by Andrew and. No changes made.
+Written by Andrew and Stathi. 
 Ensure floating point in disabled, if just tested extra credit.
 */
-int main(void){
-  PLL_Init(80);
+int main1(void){
+  PLL_Init(Bus80MHz);
   PortF_Init();
   ST7735_InitR(INITR_REDTAB);
   while(1){
@@ -124,17 +134,101 @@ int main(void){
     fun1Frame();
     fun1Data();
     Pause();
+    fun2Frame();
+    fun2Data();
+    Pause();
+    fun3Frame();
+    fun3Data1();
+    Pause();
+    fun3Frame();
+    fun3Data2();
+    Pause();
   }
 }
 
-void titleFrame(){int32_t x,y;
+/**************ExtraCredit***************
+Uses SysTick to time 4 tests:
+Test 1 Floating Point arithmatic written in C
+Test 2 Fixed Point arithmatic written in C
+Test 3 Floating Point arithmatic written in assembly
+Test 4 Fixed Point arithmatic written in assembly
+This code requires floating point enabled in startup.s
+*/
+int main(void) { float time1, time2, time3, time4;
+  float threeMags = 1000;
+  PLL_Init(Bus80MHz);         // bus clock at 80 MHz
+  PortF_Init();
+  ST7735_InitR(INITR_REDTAB);
+  SysTick_Init(80);           // initialize SysTick timer (1 micro sec)
+  EnableInterrupts();
+  while(1){
+    TitleFrameExtraCredit();
+    Pause(); ST7735_FillScreen(ST7735_BLACK);
+    ST7735_SetCursor(0,0);
+    printf("Timing Analysis...\n");
+    printf("Floating C:  \n%.3fms\n", TestFloatInC()/threeMags);
+    printf("Fixed C:     \n%.3fms\n", TestFixedInC()/threeMags);
+    printf("Floating ASM:\n%.3fms\n", TestFloatInAsm()/threeMags);
+    printf("Fixed ASM 4: \n%.3fms\n", TestFixedInAsm()/threeMags);
+    Pause();
+  }
+}
+
+float static TestFloatInC(){int32_t start;
+  Counts = 0;
+  start = Counts;
+  Test1();
+  return Counts-start;
+}
+
+float static TestFixedInC(){int32_t start;
+  Counts = 0;
+  start = Counts;
+  Test2();
+  return Counts-start;
+}
+
+float static TestFloatInAsm(){int32_t start;
+  Counts = 0;
+  start = Counts;
+  Test3();
+  return Counts-start;
+}
+
+float static TestFixedInAsm(){int32_t start;
+  Counts = 0;
+  start = Counts;
+  Test4();
+  return Counts-start;
+}
+
+/**************TitleFrameExtraCredit***************
+Prints title page of lab 1
+*/
+void static TitleFrameExtraCredit(){int32_t x,y;
+  ST7735_FillScreen(ST7735_BLACK);
+  char* titleStr = "Lab 1 Extra Credit\n  Andrew and Stathi";
+  x = 1; y = 7;
+  ST7735_SetCursor(x,y);
+  ST7735_OutString(titleStr);
+}
+
+
+/**************titleFrame***************
+Prints title page of lab 1
+*/
+void static titleFrame(){int32_t x,y;
+  ST7735_FillScreen(ST7735_BLACK);
   char* titleStr = "Lab 1\n  Andrew and Stathi";
   x = 8; y = 7;
   ST7735_SetCursor(x,y);
   ST7735_OutString(titleStr);
 }
 
-void fun1Frame(){int32_t x,y,width;
+/**************fun1Frame***************
+Prints header for testing ST7735_sDecOut3
+*/
+void static fun1Frame(){int32_t x,y,width;
   ST7735_FillScreen(ST7735_BLACK);
   char* funName = "ST7735_sDecOut3\n";
   char* line2Str = " Expected    Output";
@@ -148,8 +242,11 @@ void fun1Frame(){int32_t x,y,width;
   ST7735_DrawFastHLine(x,y,width,ST7735_YELLOW);
 }
 
-void fun1Data(){int32_t exX,exY,outX,outY;
-  exX = 0; exY = 2; outX = 12; outY = exY; //cursor values
+/**************fun1Data***************
+Prints data for testing ST7735_sDecOut3
+*/
+void static fun1Data(){int32_t exX,exY,outX,outY;
+  exX = 1; exY = 2; outX = 13; outY = exY; //cursor values
   for(uint8_t i = 0; i<13; i++){
     ST7735_SetCursor(exX,exY+i);
     ST7735_OutString((char*)outTests1[i].OutBuffer); // expected solution
@@ -158,7 +255,64 @@ void fun1Data(){int32_t exX,exY,outX,outY;
   }
 }
 
-/**************Test Lab 1***************
+/**************fun2Frame***************
+Prints header for testing ST7735_uBinOut8
+*/
+void static fun2Frame(){int32_t x,y,width;
+  ST7735_FillScreen(ST7735_BLACK);
+  char* funName = "ST7735_uBinOut8\n";
+  char* line2Str = " Expected    Output";
+  x = 3; y = 0; //cursor
+  ST7735_SetCursor(x,y);
+  ST7735_OutString(funName);
+  ST7735_OutString(line2Str);
+  x = 6*1; y = 18; width = 6*8;//pixels values
+  ST7735_DrawFastHLine(x,y,width,ST7735_YELLOW);
+  x = 6*13; width = 6*6; //cursor values
+  ST7735_DrawFastHLine(x,y,width,ST7735_YELLOW);
+}
+
+/**************fun2Data***************
+Prints data for testing ST7735_uBinOut8
+*/
+void static fun2Data(){int32_t exX,exY,outX,outY;
+  exX = 1; exY = 2; outX = 13; outY = exY; //cursor values
+  for(uint8_t i = 0; i<14; i++){
+    ST7735_SetCursor(exX,exY+i);
+    ST7735_OutString((char*)outTests2[i].OutBuffer); // expected solution
+    ST7735_SetCursor(outX,outY+i);
+    ST7735_uBinOut8(outTests2[i].InNumber);  // your solution
+  }
+}
+
+/**************fun3Frame***************
+Prints header for testing ST7735_XYplot
+*/
+void static fun3Frame(){int32_t x,y;
+  ST7735_FillScreen(ST7735_BLACK);
+  char* funName = "ST7735_XYplot\n";
+  x = 4; y = 0; //cursor
+  ST7735_SetCursor(x,y);
+  ST7735_OutString(funName);
+}
+
+/**************fun3Data1***************
+Prints circle for testing ST7735_XYplot
+*/
+void static fun3Data1(){
+  ST7735_XYplotInit("Circle",-2500, 2500, -2500, 2500);
+  ST7735_XYplot(180,(int32_t *)CircleXbuf,(int32_t *)CircleYbuf);
+}
+
+/**************fun3Data2***************
+Prints star for testing ST7735_XYplot
+*/
+void static fun3Data2(){
+  ST7735_XYplotInit("Star- upper right",-450, 150, -400, 200);
+  ST7735_XYplot(50,(int32_t *)StarXbuf,(int32_t *)StarYbuf);
+}
+
+/**************Valvano Test Lab 1***************
 Written by Valvano. No changes made.
 Ensure floating point in disabled, if just tested extra credit.
 */
@@ -196,45 +350,6 @@ int main2(void){uint32_t i;
 } 
 
 
-/**************ExtraCredit***************
-Uses SysTick to time 4 tests:
-Test 1 Floating Point arithmatic written in C
-Test 2 Fixed Point arithmatic written in C
-Test 3 Floating Point arithmatic written in assembly
-Test 4 Fixed Point arithmatic written in assembly
-This code requires floating point enabled in startup.s
-*/
-int main1(void) { int32_t startTime, time1, time2, time3, time4;
-  PLL_Init(Bus80MHz);         // bus clock at 80 MHz
-  PortF_Init();
-  ST7735_InitR(INITR_REDTAB);
-  SysTick_Init(80);           // initialize SysTick timer (1 micro sec)
-  EnableInterrupts();
-  printf("Timing Analysis");
-  startTime = Counts;
-  Test1();                    //floating-point C
-  time1 = (Counts-startTime);
-  printf(".");
-  startTime = Counts;
-  Test2();                    //fixed-point C
-  time2 = (Counts-startTime);
-  printf(".");
-  startTime = Counts;
-  Test3();                    //floating-point asm
-  time3 = (Counts-startTime);
-  printf(".");
-  startTime = Counts;
-  Test4();                    //fixed-point asm
-  time4 = (Counts-startTime);
-  printf(".\n");
-  ST7735_FillScreen(ST7735_BLACK); 
-  ST7735_SetCursor(0,0);
-                              //maintain spacing for LCD
-  printf("Floating C:  \n             %i\n", time1);
-  printf("Fixed C:     \n             %i\n", time2);
-  printf("Floating ASM:\n             %i\n", time3);
-  printf("Fixed ASM 4: \n             %i\n", time4);
-}
 
 
 // PF4 is input

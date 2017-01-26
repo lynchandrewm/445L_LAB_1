@@ -36,6 +36,8 @@
 #define ASCII_SPACE 32
 #define NULL 0
 
+#define COLUMBS 21
+
 // struct union enum statements
 typedef enum {false, true} bool;
 
@@ -46,6 +48,7 @@ int32_t static Xmin, Xmax, Xrange, Ymin, Ymax, Yrange;
 void static decToString(int32_t refNum, char* numString);
 void static binToString(int32_t refNum, int32_t res, char* numString);
 void static printTitle(char* str);
+int32_t static strLen(char* str);
 void static printStringToLCD(char* string);
 int32_t static magnitude(int32_t n);
 int32_t static decGetPlace(int32_t num, int32_t place);
@@ -166,9 +169,17 @@ void static binToString(int32_t refNum, int32_t res, char* numString){
 Prints title in space above graph. Does not wrap. 
 Starts at top left of display.
 */
-void static printTitle(char* str){
+void static printTitle(char* str){int32_t x,y,len;
+  len = strLen(str);
+  x = (COLUMBS-len)/2; y = 1;
+  ST7735_SetCursor(x,y);
   printStringToLCD(str);
   return;
+}
+
+int32_t static strLen(char* str){int32_t len;
+  for(len = 0; str[len] != 0x0; len++);
+  return len;
 }
 
 /**************printStringToLCD***************
@@ -255,7 +266,6 @@ Some copied and adapted code from ST7753_PlotClear. This function has been
 adapted to keep track of a variable X-axis. 
 */
 void static setAxes(int32_t minX, int32_t maxX, int32_t minY, int32_t maxY){
-  ST7735_FillScreen(ST7735_Color565(228,228,228)); // light grey
   if(maxY>minY){
     Ymax = maxY;
     Ymin = minY;
